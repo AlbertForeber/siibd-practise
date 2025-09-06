@@ -49,10 +49,16 @@ def parser(to_parse: str):
 
 
 def command_executor(received_command: str, args):
-    if not args:
-        return commands[received_command]()
-    else:
-        return commands[received_command](args)
+    try:
+        if not args:
+            return commands[received_command]()
+        else:
+            return commands[received_command](args)
+    except KeyError as e:
+        raise IOError(f"Unknown command: {received_command}")
+    except TypeError as e:
+        raise IOError(f"{received_command}: invalid argument: {args}")
+
 
 
 def emulate():
@@ -65,6 +71,9 @@ def emulate():
             continue
         command, arguments = parser(inp)
 
-        command_executor(command, arguments)
+        try:
+            command_executor(command, arguments)
+        except Exception as e:
+            print(e)
 
 emulate()
