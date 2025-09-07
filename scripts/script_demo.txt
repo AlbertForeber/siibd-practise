@@ -5,6 +5,12 @@ cd dir2
 cd dir32534
 pwd
 # dfsgdfg
+who
+cal
+cal 2025
+cal 2025 8
+cal 23452345 3252345
+cal 23452345 2345234 5234 52345
 exit
 #
 #

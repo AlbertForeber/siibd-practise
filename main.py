@@ -2,9 +2,13 @@ import getpass
 import os
 import re
 import argparse
+import calendar
 import xml.etree.ElementTree as ET
-from colors import *
+from extra import *
 import base64
+from datetime import datetime
+
+EMULATOR_START_TIME = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 # To register new commands
 commands = {}
@@ -21,11 +25,19 @@ def register(name):
 # Commands
 @register("ls")
 def ls(args=None):
-    def ls(args=None):
-        print("ls")
-        if args:
-            for i in args:
-                print(i)
+    mx = max([len(x) for x in vfs_root.data]) + 2
+    if args and args[0] == "-l":
+        print(EXTRA.format(f"№\t{'name:':<{mx}}file_type:"))
+        for index, i in enumerate(vfs_root.data):
+            if i != '..':
+                print(f"{index + 1}.\t{i:<{mx}}{vfs_root.data[i].filetype}")
+    else:
+        for index, i in enumerate(vfs_root.data):
+            if i == '..': continue
+            if index != 0 and index % 4 == 0:
+                print()
+            print(f"{i:<{mx}}", end='')
+        print()
 
 
 
@@ -43,12 +55,55 @@ def print_pwd():
 
 
 @register("cd")
-def cd(args = None):
-    print("cd")
-    if args:
-        for i in args:
-            print(i)
+def cd(args=None):
+    global vfs_root
+    if args is None:
+        temp_root = vfs_root
+        while temp_root.data.get('..'):
+            temp_root = temp_root.data['..']
+        vfs_root = temp_root
+    elif vfs_root.data.get(args[0]) and vfs_root.data[args[0]].filetype == 'dir':
+        vfs_root = vfs_root.data[args[0]]
+    elif args[0] != '..':
+        raise IOError(f"cd: {args[0]}: No such directory")
 
+
+@register("who")
+def who():
+    print(f"{getpass.getuser():<20}{os.ttyname(0):<20}{EMULATOR_START_TIME:<20}")
+
+
+#Calendar
+def print_one_month(year, month):
+    matrix = calendar.monthcalendar(year, month)
+    print(f"{MONTHS[month - 1]:^21}")
+    for i in (['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']):
+        print(f'{i:>3}', end='')
+    print()
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            print(f'{matrix[i][j] if matrix[i][j] != 0 else " ":>3}', end='')
+        print()
+
+
+@register("cal")
+def cal(args=None):
+    if args:
+        try:
+            args = [int(i) for i in args]
+            match len(args):
+                case 1:
+                    for i in range(1, 13):
+                        print_one_month(args[0], i)
+                case 2:
+                    print_one_month(args[0], args[1])
+                case _:
+                    raise IOError(f"cal: {args}: wrong arguments amount")
+        except Exception as e:
+            raise IOError(f"cal: {args}: {e}")
+    else:
+        today = datetime.today()
+        print_one_month(today.year, today.month)
 
 
 @register("exit")
@@ -101,7 +156,6 @@ def script_executor(source: str):
             command_executor(command, arguments)
         except Exception as e:
             print(ERROR.format(e))
-            return
 
 
 # VFS-xml
@@ -168,7 +222,7 @@ def emulate():
         try:
             command_executor(command, arguments)
         except Exception as e:
-            print(ERROR.format(e))
+           print(ERROR.format(e))
 
 
 # Console arguments interpreter
@@ -184,31 +238,31 @@ def handle_console_args():
 
 def show_console_args(args):
     parsed = vars(args)
-    print(DEBUG.format(f"Received arguments"))
+    print('-'*40)
+    print(DEBUG.format(f"Received arguments:"))
     for key, value in parsed.items():
-        print(f"+{DEBUG.format(key):>18}: {DEBUG.format(value)}")
+        print(f"+{DEBUG.format(key):>18}: {EXTRA.format(value)}")
+    print('-'*40)
 
 
 # Main function
 def start_up():
 
     # Handling scripts
-    if args.script:
-        script_executor(args.script)
+    if console_args.script:
+        script_executor(console_args.script)
     else:
         emulate()
 
+
 # Initializing VFS
-
 try:
-    args = handle_console_args()
-    show_console_args(args)
-    vfs_root = from_xml(args.vfs)
-
-    start_up()
+    console_args = handle_console_args()
+    show_console_args(console_args)
+    vfs_root = from_xml(console_args.vfs)
 except Exception as e:
     print(ERROR.format(e))
 
-
+start_up()
 
 
