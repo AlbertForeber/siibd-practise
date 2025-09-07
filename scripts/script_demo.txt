@@ -1,0 +1,11 @@
+cd dir1
+ls
+cd
+cd dir2
+cd dir32534
+# dfsgdfg
+exit
+#
+#
+#
+#
