@@ -106,6 +106,12 @@ def cal(args=None):
         print_one_month(today.year, today.month)
 
 
+@register("mkdir")
+def mkdir(args):
+    for i in args:
+        vfs_root.data[i] = Node('dir', {})
+
+
 @register("exit")
 def exit_program():
     exit()
