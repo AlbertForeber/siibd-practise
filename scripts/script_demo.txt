@@ -3,6 +3,7 @@ ls
 cd
 cd dir2
 cd dir32534
+pwd
 # dfsgdfg
 exit
 #

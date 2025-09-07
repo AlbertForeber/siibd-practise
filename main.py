@@ -4,25 +4,42 @@ import re
 import argparse
 import xml.etree.ElementTree as ET
 from colors import *
+import base64
 
 # To register new commands
 commands = {}
-vfs_root = ""
+
 
 def register(name):
     def decorator(func):
         commands[name] = func
         return func
+
     return decorator
 
 
 # Commands
 @register("ls")
-def ls(args = None):
-    print("ls")
-    if args:
-        for i in args:
-            print(i)
+def ls(args=None):
+    def ls(args=None):
+        print("ls")
+        if args:
+            for i in args:
+                print(i)
+
+
+
+def pwd(node = None):
+    if parent := vfs_root if not node else node.data.get('..'):
+        for i in parent.data:
+            if parent.data[i] == node:
+                return pwd(parent) + i + '/'
+    return '/'
+
+
+@register("pwd")
+def print_pwd():
+    print(pwd())
 
 
 @register("cd")
@@ -33,6 +50,7 @@ def cd(args = None):
             print(i)
 
 
+
 @register("exit")
 def exit_program():
     exit()
@@ -40,7 +58,7 @@ def exit_program():
 
 # Command interpreter
 def get_input_call():
-    result = f"{getpass.getuser()}@{os.uname()[1]}~%"
+    result = f"{getpass.getuser()}@{os.uname()[1]}{pwd(vfs_root)}~%"
     return INPUT.format(result[:-2], result[-2:])
 
 
@@ -86,11 +104,61 @@ def script_executor(source: str):
             return
 
 
-# Main function
+# VFS-xml
+def from_xml(source: str):
+    if not re.match(r'.+\.xml$', source):
+        raise IOError('Wrong format')
+
+    try:
+        tree = ET.parse(source)
+    except:
+        raise IOError(f"No such file: {source}")
+
+    root_element = tree.getroot()
+    root: Node = Node('dir', {})
+    build_node(root_element, root)
+    return root
+
+
+def build_node(parent_element, parent):
+    for i in parent_element.findall('./'):
+        file_type = i.get('type')
+        new_node = None
+
+        match file_type:
+            case 'dir':
+                new_node = Node('dir', {'..': parent})
+                build_node(i, new_node)
+            case 'binary':
+                new_node = Node('binary', {'..': parent, 'data': decode_b64(i.attrib['data'])})
+            case 'text':
+                new_node = Node('text', {'..': parent, 'data': i.attrib['data']})
+
+        parent.data[f'{i.tag}'] = new_node
+
+
+# VFS-local
+class Node:
+    def __init__(self, filetype, data=None):
+        self.filetype = filetype
+        self.data = data
+
+    def __str__(self):
+        return f"Node(filetype: {self.filetype}, attr: {self.data})"
+
+
+# VFS-binary
+def decode_b64(to_decode: str):
+    return base64.b64decode(to_decode)
+
+
+def encode_b64(to_encode: bytes):
+    return base64.b64encode(to_encode).decode()
+
+# Emulator
 def emulate():
     while True:
         print(get_input_call(), end=' ')
-
         inp = input().strip()
 
         if not inp:
@@ -114,21 +182,33 @@ def handle_console_args():
     return argument_parser.parse_args()
 
 
+def show_console_args(args):
+    parsed = vars(args)
+    print(DEBUG.format(f"Received arguments"))
+    for key, value in parsed.items():
+        print(f"+{DEBUG.format(key):>18}: {DEBUG.format(value)}")
+
+
 # Main function
 def start_up():
-    args = handle_console_args()
-    print(DEBUG.format(f"Received arguments: ${args.vfs} {args.script}".replace(f"{None}", "")))
 
     # Handling scripts
     if args.script:
-        try:
-            script_executor(args.script)
-        except Exception as e:
-            print(ERROR.format(e))
-            return
+        script_executor(args.script)
     else:
         emulate()
 
-start_up()
+# Initializing VFS
+
+try:
+    args = handle_console_args()
+    show_console_args(args)
+    vfs_root = from_xml(args.vfs)
+
+    start_up()
+except Exception as e:
+    print(ERROR.format(e))
+
+
 
 

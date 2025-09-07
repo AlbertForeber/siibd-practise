@@ -1,0 +1,9 @@
+<root type="dir" >
+    <dir1 type="dir" >
+        <dir2 type="dir" >
+            <dir3 type="dir" >
+                <file1 type="text" data="2" />
+            </dir3>
+        </dir2>
+    </dir1>
+</root>
