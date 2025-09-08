@@ -4,7 +4,7 @@ from typing import List
 
 from errors import ParseError, DirectoryNotFound
 from extra import MONTHS, EXTRA, DEBUG
-from vfs_node import VFSNode
+from vfs.vfs_node import VFSNode
 
 
 def parser(to_parse: str):
@@ -41,7 +41,7 @@ def get_to_dir(command: str, root: VFSNode, source: str = ""):
     temp_root = root
     if source.startswith('/'):
         route = source.split('/')
-        while temp_root.data.get('..'):
+        while temp_root.data.get('../..'):
             temp_root = temp_root.data['..']
 
     elif source.startswith('./'):
@@ -49,12 +49,12 @@ def get_to_dir(command: str, root: VFSNode, source: str = ""):
 
     elif  source == '~' or not source:
         route = []
-        while temp_root.data.get('..'):
+        while temp_root.data.get('../..'):
             temp_root = temp_root.data['..']
 
     elif source == '..':
         route = []
-        parent = temp_root.data.get('..')
+        parent = temp_root.data.get('../..')
         temp_root = parent if parent else temp_root
 
     else:
@@ -103,3 +103,4 @@ def long_print(mx, target: VFSNode):
     for index, i in enumerate(target.data):
         if i != '..':
             print(f"{index + 1}.\t{i:<{mx}}{target.data[i].filetype}")
+#

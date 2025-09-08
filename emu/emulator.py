@@ -1,14 +1,13 @@
 import getpass
 import os
-import re
 
-from errors import VFSError
-from utils import handle_console_args, show_console_args, parser
+from util.errors import VFSError
+from util.utils import handle_console_args, show_console_args, parser
 
 from commands import CommandHandler
-from extra import *
+from util.extra import *
 
-from vfs import VFS
+from vfs_xmls import VFS
 
 
 class Emulator:
@@ -85,37 +84,3 @@ class Emulator:
 if __name__ == '__main__':
     emu = Emulator()
     emu.start_up()
-
-
-
-
-
-
-
-
-
-
-
-
-# Main function
-def start_up():
-    # Handling scripts
-    if console_args.script:
-        script_executor(console_args.script)
-    else:
-        emulate()
-
-
-# Initializing VFS
-# console_args = handle_console_args()
-# show_console_args(console_args)
-# vfs = VFS()
-# vfs.from_xml(console_args.vfs)
-# vfs_root = vfs.current_directory
-# start_up()
-
-
-if __name__ == "__main__":
-    ...
-
-

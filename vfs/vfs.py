@@ -1,8 +1,8 @@
 import os.path
 import xml.etree.ElementTree as ET
 
-from errors import WrongFormatError, ParseError, VFSNotFoundError
-from utils import decode_b64
+from util.errors import WrongFormatError, ParseError, VFSNotFoundError
+from util.utils import decode_b64
 from vfs_node import VFSNode
 
 
@@ -10,6 +10,8 @@ class VFS:
     def __init__(self):
         self.current_directory = VFSNode('root', 'dir', {})
 
+
+    # XML to nodes converter
     def from_xml(self, source: str):
 
         if not source.lower().endswith('.xml'):

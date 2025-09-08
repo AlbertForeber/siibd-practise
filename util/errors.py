@@ -41,3 +41,4 @@ class DirectoryNotFound(CommandError):
 class UnknownCommand(CommandError):
     def __init__(self, command):
         super().__init__(command, f"command not found")
+#

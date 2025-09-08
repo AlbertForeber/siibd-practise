@@ -1,14 +1,10 @@
 import getpass
-import os
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
-from errors import WrongArguments, UnknownCommand
-from utils import *
-from vfs import VFS
-
-EMULATOR_START_TIME = datetime.now().strftime("%Y-%m-%d %H:%M")
-
+from util.errors import WrongArguments, UnknownCommand
+from util.utils import *
+from vfs_xmls import VFS
 
 commands = {}   # имя_функции - функция
 params = {}     # имя_функции - [необходимое кол-во арг-ов, максимальное кол-во арг-ов]

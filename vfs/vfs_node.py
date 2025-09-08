@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Dict
 
+
 @dataclass()
 class VFSNode:
     name: str
