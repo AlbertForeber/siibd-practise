@@ -89,7 +89,7 @@
 3) python emulator.py several_files.xml - в качестве VFS используется структура из нескольких файлов (два обычных, один бинарный)
 
 4. Примеры использования
-```
+```python
 ----------------------------------------
 Received arguments:
 +    vfs: several_levels.xml
