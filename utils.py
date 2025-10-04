@@ -4,7 +4,7 @@ from typing import List
 
 from errors import ParseError, DirectoryNotFound
 from extra import MONTHS, EXTRA, DEBUG
-from vfs.vfs_node import VFSNode
+from vfs_node import VFSNode
 
 
 def parser(to_parse: str):
@@ -12,9 +12,11 @@ def parser(to_parse: str):
     for index, i in enumerate(parsed[1:]):
         if i[0] == '$':
             parsed_argument = re.match(r"\$(\w+)|\${([^}]+)}", i)
+
             var1, var2 = parsed_argument.groups()
             var_name = var1 or var2
             parsed[index + 1] = os.environ.get(var_name, "")
+            #print(f'Переменная окружения: {parsed[index + 1]}')
 
     return parsed[0], parsed[1:]
 
@@ -41,7 +43,7 @@ def get_to_dir(command: str, root: VFSNode, source: str = ""):
     temp_root = root
     if source.startswith('/'):
         route = source.split('/')
-        while temp_root.data.get('../..'):
+        while temp_root.data.get('..'):
             temp_root = temp_root.data['..']
 
     elif source.startswith('./'):
@@ -49,12 +51,12 @@ def get_to_dir(command: str, root: VFSNode, source: str = ""):
 
     elif  source == '~' or not source:
         route = []
-        while temp_root.data.get('../..'):
+        while temp_root.data.get('..'):
             temp_root = temp_root.data['..']
 
     elif source == '..':
         route = []
-        parent = temp_root.data.get('../..')
+        parent = temp_root.data.get('..')
         temp_root = parent if parent else temp_root
 
     else:

@@ -1,13 +1,13 @@
 import getpass
 import os
 
-from util.errors import VFSError
-from util.utils import handle_console_args, show_console_args, parser
+from errors import VFSError
+from utils import handle_console_args, show_console_args, parser
 
 from commands import CommandHandler
-from util.extra import *
+from extra import *
 
-from vfs_xmls import VFS
+from vfs import VFS
 
 
 class Emulator:
@@ -28,7 +28,7 @@ class Emulator:
 
     # Get string representation of user info and current path
     def __get_input_call(self):
-        cur_path = self.commandHandler.pwd(self.vfs.current_directory)
+        cur_path = self.commandHandler.pwd()
         result = f"{getpass.getuser()}@{os.uname()[1]}{cur_path}~%"
         return INPUT.format(result[:-2], result[-2:])
 

@@ -1,8 +1,8 @@
 import os.path
 import xml.etree.ElementTree as ET
 
-from util.errors import WrongFormatError, ParseError, VFSNotFoundError
-from util.utils import decode_b64
+from errors import WrongFormatError, ParseError, VFSNotFoundError
+from utils import decode_b64
 from vfs_node import VFSNode
 
 

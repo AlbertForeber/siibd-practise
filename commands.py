@@ -2,9 +2,10 @@ import getpass
 from datetime import datetime
 from typing import Optional
 
-from util.errors import WrongArguments, UnknownCommand
-from util.utils import *
-from vfs_xmls import VFS
+from errors import WrongArguments, UnknownCommand
+from extra import EMULATOR_START_TIME
+from utils import *
+from vfs import VFS
 
 commands = {}   # имя_функции - функция
 params = {}     # имя_функции - [необходимое кол-во арг-ов, максимальное кол-во арг-ов]
@@ -51,8 +52,8 @@ class CommandHandler:
 
 
     @register("pwd", 0, 0)
-    def print_pwd(self):
-        print(self.pwd())
+    def print_pwd(self, args):
+        print(self.pwd(self.vfs.current_directory))
 
 
     @register("cd", 0, 1)
@@ -62,7 +63,7 @@ class CommandHandler:
 
 
     @register("who", 0, 0)
-    def who(self):
+    def who(self, args):
         print(f"{getpass.getuser():<20}{os.ttyname(0):<20}{EMULATOR_START_TIME:<20}")
 
     # Calendar
