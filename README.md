@@ -93,16 +93,6 @@
 ----------------------------------------
 Received arguments:
 +    vfs: several_levels.xml
-+ script: ./scripts/starter.sh
-----------------------------------------
-albert@MacBook-Air-Albert.local/~% echo "Test #1 ---------------------------------"
-echo: command not found
-albert@MacBook-Air-Albert.local/~% python3 ../main.py ../vsf/several_files.xml --script script_demo.txt
-python3: command not found
-(.venv) albert@MacBook-Air-Albert ConfUpr1 % python emulator.py several_levels.xml --script ./scripts/script_demo.txt
-----------------------------------------
-Received arguments:
-+    vfs: several_levels.xml
 + script: ./scripts/script_demo.txt
 ----------------------------------------
 albert@MacBook-Air-Albert.local/~% cd dir1
